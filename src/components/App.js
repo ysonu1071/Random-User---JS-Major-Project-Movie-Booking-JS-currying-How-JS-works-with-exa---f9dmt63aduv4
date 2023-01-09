@@ -1,82 +1,129 @@
-import React from 'react'
+import React, { Component } from 'react'
 import '../styles/App.css';
 
+import {useEffect} from 'react'
+import { useState } from 'react';
 
 
-// Sample response from api below, dont use this data
-// {
-//   results: [
-//     {
-//       gender: "female",
-//       name: {
-//         title: "Miss",
-//         first: "Zara",
-//         last: "White"
-//       },
-//       location: {
-//         street: {
-//           number: 9548,
-//           name: "Wairau Road"
-//         },
-//         city: "Hamilton",
-//         state: "Tasman",
-//         country: "New Zealand",
-//         postcode: 52652,
-//         coordinates: {
-//           latitude: "68.0268",
-//           longitude: "114.0576"
-//         },
-//         timezone: {
-//           offset: "-1:00",
-//           description: "Azores, Cape Verde Islands"
-//         }
-//       },
-//       email: "zara.white@example.com",
-//       login: {
-//         uuid: "fd26ff4c-794a-41d9-bc82-c79997d6309b",
-//         username: "bigrabbit521",
-//         password: "liang",
-//         salt: "JsOd1LTX",
-//         md5: "c60353ef1d02626f8afcb50bc80baac2",
-//         sha1: "2a0aea755e22c24f52a75b6b972af4e32a892997",
-//         sha256: "f01f1d678bebaec80d452621a9a81f78296079a0c3fdb9bea24d1a74561863d2"
-//       },
-//       dob: {
-//         date: "1978-03-29T10:36:08.698Z",
-//         age: 44
-//       },
-//       registered: {
-//         date: "2012-09-08T19:40:27.630Z",
-//         age: 10
-//       },
-//       phone: "(483)-206-7882",
-//       cell: "(986)-684-2134",
-//       id: {
-//         name: "",
-//         value: null
-//       },
-//       picture: {
-//         large: "https://randomuser.me/api/portraits/women/60.jpg",
-//         medium: "https://randomuser.me/api/portraits/med/women/60.jpg",
-//         thumbnail: "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-//       },
-//       nat: "NZ"
-//     }
-//   ],
-//     info: {
-//     seed: "00bf0e8b7e323357",
-//       results: 1,
-//         page: 1,
-//           version: "1.3"
-//   }
-// }
-const App = () => {
+// const fetchData = async() => {
+//   const response = await fetch(' https://randomuser.me/api/');
+//   const data = await response.json();
+//   userData = data;
   
-  return (
-    <div id="main">
+// }
+
+// fetchData().then((a)=>{
+//   console.log(userData)
+// });
+
+
+
+class App extends Component{
+  constructor(){
+    super();
+    this.state = {
+      title : "hi",
+      firstName: '',
+      lastName: '',
+      img : '',
+      age : '',
+      email : '',
+      phone : '',
+      additionalInfo : '',
+      allData : '',
+      isLoad : false,
+
+    }
+
+    fetch('https://randomuser.me/api/').then((respone)=>{
+      return respone.json();
+    }).then((data)=>{
+      console.log(data)
+      this.setState({
+        title: data.results[0].name.title,
+        firstName: data.results[0].name.first,
+        lastName: data.results[0].name.last,
+        img : data.results[0].picture.large,
+        allData : data,
+        isLoad:true
+      })
+    })
+
+    console.log('constructor is called')
+  }
+
+  fetchData = () => {
+    this.setState({
+      isLoad : false
+    })
+    fetch('https://randomuser.me/api/').then((respone)=>{
+      return respone.json();
+    }).then((data)=>{
       
-    </div>
-  )
+      console.log(data)
+      this.setState({
+        title: data.results[0].name.title,
+        firstName: data.results[0].name.first,
+        lastName: data.results[0].name.last,
+        img : data.results[0].picture.large,
+        allData : data,
+        age: '',
+        email:'',
+        phone: '',
+        additionalInfo: '',
+        isLoad:true
+      })
+    })
+  }
+
+  handleAge = () => {
+    // console.log(this.state.allData.results[0].dob.age)
+    this.setState({
+      additionalInfo : this.state.allData.results[0].dob.age
+    })
+  }
+  handleEmail = () => {
+    // console.log(this.state.allData.results[0].dob.age)
+    this.setState({
+      additionalInfo : this.state.allData.results[0].email
+    })
+  }
+  handlePhone = () => {
+    // console.log(this.state.allData.results[0].dob.age)
+    this.setState({
+      additionalInfo : this.state.allData.results[0].phone
+    })
+  }
+
+  render(){
+    // console.log(this.state.userData.results)
+    console.log('render is called')
+    return (
+      <div id="main">
+        {!this.state.isLoad && <h4>Loading</h4>}
+        {this.state.isLoad && <div className='container'>
+          <div className='block'>
+            <img src={this.state.img}/>
+            <h3>{this.state.title} {this.state.firstName} {this.state.lastName}</h3>
+
+           <div>
+            <button data-attr='age' onClick={this.handleAge}>Age</button>
+            <button data-attr='email' onClick={this.handleEmail}>Email</button>
+            <button data-attr='phone' onClick={this.handlePhone}>Phone</button>
+           </div>
+           <button id='getUser' onClick={this.fetchData}>Get User</button>
+           <section>
+            <h4>Addition info</h4>
+            {this.state.additionalInfo}
+           </section>
+          </div>
+
+          </div>}
+      </div>
+    )
+  }
+
+ 
 }
 
 
